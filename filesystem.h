@@ -1,6 +1,7 @@
 #ifndef _FILESYSYSTEM_H
 #define _FILESYSYSTEM_H
 
+int formatDisk();
 int fLs(); // Johnny
 int fOpen(char *name); // Lewis 
 int fClose(int fileID); // Lewis

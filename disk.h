@@ -7,6 +7,6 @@
 #define ERROR 0
 #define NO_ERROR 1
   
-void initDist();
+void initDisk();
 int dRead(int addr, char *buf);
 int dWrite(int addr, char *buf);
