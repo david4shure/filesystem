@@ -6,7 +6,6 @@
 #define PERIOD 2147483647.0
 #define ERROR 0
 #define NO_ERROR 1
-#define NULL 0
   
 void initDist();
 int dRead(int addr, char *buf);

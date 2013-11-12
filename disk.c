@@ -1,5 +1,7 @@
 #include <stdio.h>
-#include “disk.h”
+#include <unistd.h>
+#include <stdlib.h>
+#include "disk.h"
  
 static int threshold;
 static char *bList[NUM_BLOCKS];
