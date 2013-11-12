@@ -1,4 +1,4 @@
 
 build : disk.c disk.h filesystem.c filesystem.h
-	gcc disk.c filesystem.c
+	gcc -std=c99 disk.c filesystem.c
 
