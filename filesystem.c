@@ -1,10 +1,12 @@
 #include <inttypes.h>
+#include <string.h>
+#include <stdlib.h>
+#include "disk.h"
+
 typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
-
-#define NUM_BLOCKS 100
-#define BLOCK_SIZE 128
+typedef unsigned int uint;
 
 typedef struct File {
   char filename [8];
@@ -59,13 +61,13 @@ int fOpen (const char* name) {
     if (ext_len > 3) return -1;
   }
   FAT fat;
-  if (diskRead(0, (char*)&fat) == -1) return -1;
+  if (!dRead(0, (char*)&fat)) return -1;
   uint i;
   int first_unused = -1;
   for (i = 0; i < NUM_FILES; i++) {
-    if (first_unused == -1 && fat[i].name[0] == 0) first_unused = i;
-    else if (strncmp(fat[i].name, name, name_len) == 0
-	     && strncmp(fat[i].ext, ext, ext_len) == 0) {
+    if (first_unused == -1 && fat[i].filename[0] == 0) first_unused = i;
+    else if (strncmp(fat[i].filename, name, name_len) == 0
+	     && strncmp(fat[i].extension, name + name_len + 1, ext_len) == 0) {
       break;
     }
   }
@@ -77,14 +79,14 @@ int fOpen (const char* name) {
     i = first_unused;
     // Create new
     for (uint j = 0; j < 8; j++) {
-      fat[i].name[j] = j < name_len ? name[j] : 0;
+      fat[i].filename[j] = j < name_len ? name[j] : 0;
     }
     for (uint j = 0; j < 3; j++) {
       fat[i].extension[j] = j < ext_len ? name[name_len + 1 + j] : 0;
     }
     fat[i].first_cluster = 0;
     fat[i].size = 0;
-    if (diskWrite(0, (char*)&fat) == -1) return -1;
+    if (!dWrite(0, (char*)&fat)) return -1;
   }
   FileDescriptor fd;
   fd.active = 1;
@@ -117,17 +119,17 @@ int fRead(int fileID, char *buffer, int length) {
   if (fileID > num_fds) return -1;
   if (!fds[fileID].active) return -1;
   char *bufPtr;
-  
+
 }
 
 int fLs() {
   FAT fat;
-  int read = diskRead(0, (char *) &fat);
-  if (read == -1) {
+  int read = dRead(0, (char *) &fat);
+  if (read == 0) {
     return -1;
   }
   for( int i = 0; i < NUM_FILES; i++ ) {
-    printf(“%8s”, fat[i].filename);
+    printf("%8s", fat[i].filename);
   }
   return 0;
 }
@@ -137,14 +139,13 @@ int fSeek(int fileID, int position, int absolute) {
   if (fileID > num_fds) return -1;
   if (!fds[fileID].active) return -1;
   if (absolute == 1) {
-    fds[FileID].position = position;
+    fds[fileID].position = position;
   } else if (absolute == 0) {
-    fds[FileID].position += position;  
+    fds[fileID].position += position;
   } else {
     return -1;
   }
 }
 
-//-------------------------------harness.c --------------------------------------
 
 
