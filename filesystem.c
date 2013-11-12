@@ -6,7 +6,7 @@ typedef uint32_t uint32;
 #define NUM_BLOCKS 100
 #define BLOCK_SIZE 128
 
-struct File {
+typedef struct File {
   char filename [8];
   char extension [3];
   uint8 attributes;
@@ -15,14 +15,7 @@ struct File {
   uint16 date;
   uint16 first_cluster;
   uint32 size;
-};
-
-struct OpenFileTableEntry {  // superseded by FileDescriptor?
-  int inode;  // points to FAT entry
-  File FCB ; // in-memory copy of FCB
-  int position ; // read pointer/
-  int processID;
-};
+} File;
 
 #define NUM_FILES (BLOCK_SIZE / sizeof(File))
 typedef File FAT [NUM_FILES];  // Takes up one block
@@ -38,14 +31,14 @@ int formatDisk() {
   return dWrite(0, (char*)fat);
 }
 
-struct FileDescriptor {
+typedef struct FileDescriptor {
   uint8 active;
   uint8 inode;
   uint16 first_cluster;
   uint16 current_cluster;
   uint32 position;
   uint32 size;
-};
+} FileDescriptor;
 
 FileDescriptor* fds = NULL;
 uint num_fds = 0;
