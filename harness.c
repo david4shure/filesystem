@@ -48,10 +48,12 @@ int main () {
         if (buf[i * 0x20]) failed = 1;
     }
     ok(!failed, "formatDisk created four unallocated File entries");
+     // Testing file opening, autocreates file
     int fh = fOpen("asdf.exe");
     ok(fh != -1, "fOpen didn't return error");
     dRead2(0, buf);
     ok(strncmp("asdf\0\0\0\0exe", buf, 11) == 0, "fOpen created a file record");
+     // File closing and opening again
     ok(fClose(fh) != -1, "fClose didn't return error");
     fh = fOpen("asdf.exe");
     ok(fh != -1, "fOpen again didn't return error");
@@ -59,7 +61,7 @@ int main () {
     ok(buf[0x20] == 0, "fOpen didn't create second file");
     uint16* first_cluster = (uint16*)(buf + 0x1a);
     ok(*first_cluster == 0, "first_cluster was set to 0 for new file");
-     // Manually write a file
+     // Manually write a file.  TODO: get the File struct over here.
     *first_cluster = 2;
     dWrite(0, buf);
     for (int i = 0; i < BLOCK_SIZE-2; i++)
@@ -67,15 +69,16 @@ int main () {
     buf[BLOCK_SIZE - 2] = 0;
     buf[BLOCK_SIZE - 1] = 0;
     dWrite(2, buf);
+     // Testing file reading (according to what we just wrote)
     char buf2 [30];
     if (ok(fRead(fh, buf2, 30) != -1, "fRead didn't return error")) {
         int bad = 0;
         for (int i = 0; i < 30; i++)
             if (buf2[i] != 0xcc) bad = 1;
-        ok(!bad, "fRead properly read file.");
+        ok(!bad, "fRead properly read file");
     }
     else {
-        ok(0, "fRead properly read file. # SKIP");
+        ok(0, "fRead properly read file # SKIP");
     }
      // Dump disk to file for perusing
     FILE* dump = fopen("disk.out", "w");
