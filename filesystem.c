@@ -67,7 +67,7 @@ int fOpen (const char* name) {
   for (i = 0; i < NUM_FILES; i++) {
     if (first_unused == -1 && fat[i].filename[0] == 0) first_unused = i;
     else if (strncmp(fat[i].filename, name, name_len) == 0
-	     && strncmp(fat[i].extension, name + name_len + 1, ext_len) == 0) {
+         && strncmp(fat[i].extension, name + name_len + 1, ext_len) == 0) {
       break;
     }
   }

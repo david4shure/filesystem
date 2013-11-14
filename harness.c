@@ -22,7 +22,15 @@ void diag (const char* message) {
 }
 
 int main () {
-    plan(1);
+    plan(2);
     initDisk();
     ok(formatDisk() == -1, "formatDisk works");
+     // Testing that all File structs were initialized to unallocated
+    char buf [BLOCK_SIZE];
+    dRead(0, buf);
+    int failed = 0;
+    for (int i = 0; i < 4; i++) {
+        if (buf[i * 0x20]) failed = 1;
+    }
+    ok(!failed, "formatDisk created four unallocated File entries");
 }

@@ -2,10 +2,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "disk.h"
- 
+
 static int threshold;
 static char *bList[NUM_BLOCKS];
- 
+
 void initDisk() {
   int i;
 
@@ -13,7 +13,7 @@ void initDisk() {
   threshold = (int) (RELIABILITY*PERIOD);
   sleep(3);
 }
-   
+
 int dRead(int addr, char *buf) {
   int i;
   char *bufPtr;
